@@ -24,7 +24,10 @@ input:focus,textarea:focus{border-color:var(--accent)}
 .small{font-size:12px;color:var(--muted);line-height:1.8}
 .hidden{display:none!important}
 .tabs{display:flex;gap:8px;margin:14px 0}.tab{flex:1;padding:11px;border-radius:13px;background:#171725;color:#aaa}.tab.active{background:#292644;color:#fff}
-.chat{height:calc(100dvh - 155px);display:flex;flex-direction:column}
+.chat{height:calc(100dvh - 155px);height:calc(var(--vh, 1dvh) * 100 - 155px);display:flex;flex-direction:column;min-height:0}
+@supports (height:100svh){.chat{height:calc(100svh - 155px)}}
+@media(max-width:720px){.app{padding:10px 12px}.chat{height:calc(var(--app-height, 100dvh) - 105px)}.composer{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+
 .chat-head{display:flex;align-items:center;gap:10px;padding:12px 0}.back{background:#202032;color:#fff;padding:9px 12px;border-radius:12px}.status{font-size:12px;color:#63e5b4}
 .messages{flex:1;overflow:auto;padding:8px 2px 16px;overscroll-behavior:contain}
 .msg{max-width:82%;margin:8px 0;padding:11px 13px;border-radius:17px;position:relative;user-select:none;-webkit-user-select:none}
@@ -50,10 +53,11 @@ input:focus,textarea:focus{border-color:var(--accent)}
 <label style="margin-top:12px">رمز اتاق</label>
 <input id="roomPass" type="password" placeholder="رمز دلخواه خودت">
 <div class="row">
-<button class="btn" id="create">ساخت اتاق</button>
+<button class="btn" id="create">ساخت اتاق اختصاصی من</button>
 <button class="btn secondary" id="join">ورود به لینک</button>
 </div>
-<p class="small">در نسخه Firebase، لینک هر صاحب اتاق با نام کاربری او ساخته می‌شود و پیام‌ها برای هر مهمان جدا نگهداری می‌شوند.</p>
+<button class="btn secondary" id="newRoom">➕ ساخت اتاق خودم</button>
+<p class="small">هر اتاق لینک اختصاصی خودش را دارد. هر مهمان هم یک گفت‌وگوی مستقل خواهد داشت.</p>
 </div>
 
 <div class="card">
@@ -105,15 +109,63 @@ function addMsg(text,side){
   $('messages').appendChild(d); $('messages').scrollTop=$('messages').scrollHeight;
 }
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-$('create').onclick=()=>{const u=$('username').value.trim()||'hamo';$('linkPreview').value=location.origin+location.pathname+'#u/'+encodeURIComponent(u);toast('اتاق آماده شد')}
-$('copyLink').onclick=async()=>{try{await navigator.clipboard.writeText($('linkPreview').value);toast('لینک کپی شد')}catch(e){toast('کپی در این مرورگر در دسترس نیست')}}
-$('join').onclick=openChat;
+function setAppHeight(){
+  const h=window.visualViewport?window.visualViewport.height:window.innerHeight;
+  document.documentElement.style.setProperty('--app-height',h+'px');
+}
+setAppHeight();
+window.addEventListener('resize',setAppHeight,{passive:true});
+if(window.visualViewport) window.visualViewport.addEventListener('resize',setAppHeight,{passive:true});
+
+function makeRoom(){
+  const u=$('username').value.trim()||'hamo';
+  const pass=$('roomPass').value;
+  if(!pass){toast('برای اتاق یک رمز انتخاب کن');$('roomPass').focus();return}
+  const id=u.toLowerCase().replace(/[^a-z0-9_-]/g,'-')+'-'+Math.random().toString(36).slice(2,8);
+  const link=location.origin+location.pathname+'#room/'+encodeURIComponent(id);
+  localStorage.setItem('hamo_owner_'+id,JSON.stringify({username:u,pass,created:Date.now()}));
+  $('linkPreview').value=link;
+  toast('اتاق اختصاصی ساخته شد');
+}
+$('create').onclick=makeRoom;
+$('newRoom').onclick=()=>{$('username').value='';$('roomPass').value='';$('username').focus();toast('مشخصات اتاق جدید را وارد کن')};
+$('copyLink').onclick=async()=>{try{await navigator.clipboard.writeText($('linkPreview').value);toast('لینک کپی شد')}catch(e){toast('کپی در این مرورگر در دسترس نیست')}};
+$('join').onclick=()=>{if(!$('linkPreview').value)return;openChat()};
+
+function openChat(){
+  $('home').classList.add('hidden'); $('chatPage').classList.remove('hidden');
+  $('chatTitle').textContent='چت ناشناس با '+($('username').value.trim()||'HAMO');
+  if(!$('messages').children.length) addMsg('سلام 👋 این گفت‌وگو فقط برای همین مهمان است.','theirs');
+  if(location.hash!=='#chat') history.pushState({chat:true},'',location.pathname+'#chat');
+  requestAnimationFrame(()=>{setAppHeight();$('messages').scrollTop=$('messages').scrollHeight;});
+}
 $('back').onclick=()=>{history.pushState({},'',location.pathname);$('chatPage').classList.add('hidden');$('home').classList.remove('hidden')};
-$('send').onclick=()=>{const x=$('input').value.trim();if(!x)return;addMsg(x,'mine');$('input').value='';$('typing').textContent='';}
-$('input').addEventListener('input',()=>{$('typing').textContent=$('input').value?'در حال نوشتن…':''});
-$('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
-window.addEventListener('popstate',()=>{if(location.hash==='#chat')openChat();else{$('chatPage').classList.add('hidden');$('home').classList.remove('hidden')}});
-document.addEventListener('copy',e=>{e.preventDefault();toast('کپی پیام‌ها غیرفعال است')});
+
+const input=$('input');
+let draft='';
+input.addEventListener('input',()=>{
+  draft=input.value;
+  $('typing').textContent=draft?'در حال نوشتن…':'';
+  input.style.height='48px';
+  input.style.height=Math.min(input.scrollHeight,120)+'px';
+});
+input.addEventListener('focus',()=>setTimeout(()=>{setAppHeight();$('messages').scrollTop=$('messages').scrollHeight},80));
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
+$('send').onclick=()=>{
+  const x=input.value.trim(); if(!x)return;
+  addMsg(x,'mine'); input.value='';draft='';input.style.height='48px';$('typing').textContent='';
+  setTimeout(()=>input.focus(),0);
+};
+
+window.addEventListener('pageshow',()=>{
+  if(location.hash==='#chat') openChat();
+  setAppHeight();
+});
+window.addEventListener('popstate',()=>{
+  if(location.hash==='#chat') openChat();
+  else{$('chatPage').classList.add('hidden');$('home').classList.remove('hidden')}
+});
+document.addEventListener('copy',e=>{if(e.target.closest('.msg')){e.preventDefault();toast('کپی پیام‌ها غیرفعال است')}});
 document.addEventListener('contextmenu',e=>{if(e.target.closest('.msg'))e.preventDefault()});
 </script>
 </body>
