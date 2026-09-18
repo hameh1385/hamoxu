@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -316,10 +316,17 @@
   </div>
 
   <script>
-    /* ---------- امنیت و هش ---------- */
+    /* ================= امنیت ================= */
+    // اطلاعات ورود ادمین اصلی
     const SECRET_USER = 'hamo_admin';
-    // SHA-256 از "Hamo@2026#Secure"
-    const SECRET_HASH = 'e7f6a0b3b1c2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9';
+    const SECRET_PASS = 'Hamo@2026';
+
+    // محدودیت تلاش ناموفق
+    const MAX_ATTEMPTS = 5;
+    const LOCK_TIME = 60 * 1000; // ۶۰ ثانیه
+
+    // انقضای نشست (۲ ساعت)
+    const SESSION_TTL = 2 * 60 * 60 * 1000;
 
     async function sha256(text) {
       const enc = new TextEncoder().encode(text);
@@ -327,7 +334,6 @@
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    /* ---------- ذخیره‌سازی امن ---------- */
     function safeParse(key, fallback) {
       try {
         const raw = localStorage.getItem(key);
@@ -336,21 +342,24 @@
         return parsed && typeof parsed === 'object' ? parsed : fallback;
       } catch { return fallback; }
     }
-    function getRooms() { return safeParse('hamo_rooms_v3', {}); }
-    function saveRooms(r) { localStorage.setItem('hamo_rooms_v3', JSON.stringify(r)); }
 
-    function getMySent() { return safeParse('hamo_my_sent_v3', {}); }
-    function saveMySent(d) { localStorage.setItem('hamo_my_sent_v3', JSON.stringify(d)); }
+    /* ================= داده‌ها ================= */
+    function getRooms() { return safeParse('hamo_rooms_v2', {}); }
+    function saveRooms(r) { localStorage.setItem('hamo_rooms_v2', JSON.stringify(r)); }
 
-    /* ---------- مدیریت نشست ---------- */
-    const SESSION_KEY = 'hamo_session_v3';
-    const SESSION_TTL = 2 * 60 * 60 * 1000; // ۲ ساعت
+    function getMySent() { return safeParse('hamo_my_sent', {}); }
+    function saveMySent(d) { localStorage.setItem('hamo_my_sent', JSON.stringify(d)); }
+
+    /* ================= نشست ================= */
+    const SESSION_KEY = 'hamo_session';
 
     function setSession(username) {
-      const token = generateId() + generateId();
-      const session = { username, token, expiresAt: Date.now() + SESSION_TTL };
+      const session = {
+        username,
+        token: generateId() + generateId(),
+        expiresAt: Date.now() + SESSION_TTL
+      };
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-      return token;
     }
     function getSession() {
       try {
@@ -362,16 +371,13 @@
     }
     function clearSession() { sessionStorage.removeItem(SESSION_KEY); }
 
-    /* ---------- محدودیت تلاش ---------- */
-    const LOCK_KEY = 'hamo_login_lock_v3';
-    const MAX_ATTEMPTS = 5;
-    const LOCK_TIME = 30 * 1000;
-
+    /* ================= قفل ورود ================= */
+    const LOCK_KEY = 'hamo_lock';
     function getLock() { return safeParse(LOCK_KEY, { count: 0, until: 0 }); }
     function setLock(l) { localStorage.setItem(LOCK_KEY, JSON.stringify(l)); }
-    function isLocked() { return Date.now() < getLock().until; }
+    function isLocked() { return Date.now() < (getLock().until || 0); }
 
-    /* ---------- وضعیت ---------- */
+    /* ================= وضعیت ================= */
     let currentRoom = null;
     let isOwner = false;
     let refreshTimer = null;
@@ -383,8 +389,8 @@
       document.getElementById('page-' + name).classList.add('active');
       window.scrollTo(0, 0);
     }
+
     function showLogin() {
-      // اگه نشست معتبر داره، مستقیم بره داشبورد
       const s = getSession();
       if (s && s.username) {
         currentRoom = s.username;
@@ -397,20 +403,36 @@
       showPage('login');
     }
 
+    /* ================= ساخت اتاق ================= */
     async function createRoom() {
       const username = document.getElementById('create-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
       const password = document.getElementById('create-password').value.trim();
       const displayName = document.getElementById('create-displayname').value.trim() || username;
 
-      if (!username || username.length < 3) { alert('نام کاربری باید حداقل ۳ حرف باشه'); return; }
-      if (!password || password.length < 6) { alert('رمز باید حداقل ۶ کاراکتر باشه'); return; }
+      if (!username || username.length < 3) {
+        alert('نام کاربری باید حداقل ۳ حرف باشه (فقط حروف انگلیسی، عدد و _)');
+        return;
+      }
+      if (!password || password.length < 4) {
+        alert('رمز باید حداقل ۴ کاراکتر باشه');
+        return;
+      }
 
       const rooms = getRooms();
-      if (rooms[username]) { alert('این نام کاربری قبلاً گرفته شده'); return; }
+      if (rooms[username]) {
+        alert('این نام کاربری قبلاً گرفته شده. یکی دیگه انتخاب کن.');
+        return;
+      }
 
+      // ذخیره رمز به‌صورت هش (امن)
       const passHash = await sha256(password + '::' + username);
 
-      rooms[username] = { passHash, displayName, messages: [], createdAt: Date.now() };
+      rooms[username] = {
+        passHash,
+        displayName,
+        messages: [],
+        createdAt: Date.now()
+      };
       saveRooms(rooms);
 
       currentRoom = username;
@@ -422,7 +444,9 @@
       document.getElementById('create-result').classList.add('show');
     }
 
+    /* ================= ورود ================= */
     async function login() {
+      // چک قفل
       if (isLocked()) {
         const left = Math.ceil((getLock().until - Date.now()) / 1000);
         alert('تلاش بیش از حد. ' + left + ' ثانیه دیگه امتحان کن.');
@@ -432,28 +456,35 @@
       const username = document.getElementById('login-username').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
 
-      if (!username || !password) { alert('نام کاربری و رمز رو وارد کن'); return; }
-
-      const rooms = getRooms();
-      let ok = false;
-
-      if (rooms[username]) {
-        const passHash = await sha256(password + '::' + username);
-        if (rooms[username].passHash === passHash) ok = true;
-        else if (rooms[username].password === password) {
-          // سازگاری با اتاق‌های قدیمی: هش می‌کنیم
-          rooms[username].passHash = passHash;
-          delete rooms[username].password;
-          saveRooms(rooms);
-          ok = true;
-        }
+      if (!username || !password) {
+        alert('نام کاربری و رمز رو وارد کن');
+        return;
       }
 
-      // پشتیبانی از ادمین اصلی
-      if (!ok && username === SECRET_USER) {
-        const h = await sha256(password);
-        // اگر کاربر اصلی بود، از هش داخل کد چک می‌کنیم
-        if (password === 'Hamo@2026#Secure') ok = true;
+      let ok = false;
+      let isAdmin = false;
+
+      // ورود ادمین اصلی
+      if (username === SECRET_USER && password === SECRET_PASS) {
+        ok = true;
+        isAdmin = true;
+      }
+
+      // ورود صاحب اتاق
+      if (!ok) {
+        const rooms = getRooms();
+        if (rooms[username]) {
+          const passHash = await sha256(password + '::' + username);
+          if (rooms[username].passHash === passHash) {
+            ok = true;
+          } else if (rooms[username].password === password) {
+            // سازگاری با اتاق‌های قدیمی
+            rooms[username].passHash = passHash;
+            delete rooms[username].password;
+            saveRooms(rooms);
+            ok = true;
+          }
+        }
       }
 
       if (!ok) {
@@ -468,10 +499,27 @@
         return;
       }
 
+      // پاک کردن قفل بعد از ورود موفق
       setLock({ count: 0, until: 0 });
+
       currentRoom = username;
       isOwner = true;
       setSession(username);
+
+      if (isAdmin) {
+        // ادمین: اگه اتاقی به اسمش نیست بساز
+        const rooms = getRooms();
+        if (!rooms[username]) {
+          rooms[username] = {
+            passHash: await sha256(password + '::' + username),
+            displayName: 'مدیر',
+            messages: [],
+            createdAt: Date.now()
+          };
+          saveRooms(rooms);
+        }
+      }
+
       renderDashboard();
       showPage('dashboard');
       startAutoRefresh();
@@ -493,33 +541,96 @@
       showPage('home');
     }
 
-    /* ---------- آپدیت خودکار نرم ---------- */
+    /* ================= آپدیت خودکار (نرم) ================= */
     function startAutoRefresh() {
       stopAutoRefresh();
       refreshTimer = setInterval(() => {
-        // اگه input فعال داره، DOM رو دست نزن
+        // اگه کاربر داره تایپ می‌کنه، دست نزن (کیبورد بسته نشه)
         const active = document.activeElement;
-        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+          return;
+        }
 
         const rooms = getRooms();
         const room = rooms[currentRoom];
         if (!room) return;
 
-        // فیلتر ۲۴ ساعته و ذخیره
         const now = Date.now();
         const before = room.messages.length;
         room.messages = room.messages.filter(m => now - m.createdAt < 24 * 60 * 60 * 1000);
         if (room.messages.length !== before) saveRooms(rooms);
 
-        if (isOwner) softRefreshDashboard(room, now);
-        else softRefreshMyChats(room, now);
+        if (isOwner) {
+          softRefreshDashboard(room, now);
+        } else {
+          softRefreshMyChats(room, now);
+        }
       }, 5000);
     }
+
     function stopAutoRefresh() {
       if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
     }
 
-    /* ---------- رندر داشبورد ---------- */
+    /* ================= رندر داشبورد ================= */
+    function messageCardHTML(msg, now, forOwner) {
+      const hoursLeft = Math.max(0, 24 - Math.floor((now - msg.createdAt) / 3600000));
+      const allowed = msg.allowReply;
+
+      if (forOwner) {
+        return `
+          <div class="message-card ${allowed ? 'allowed' : ''}" data-id="${msg.id}">
+            <div class="message-meta">
+              <span class="badge badge-time">⏳ ${hoursLeft} ساعت مانده</span>
+              <span class="badge ${allowed ? 'badge-allowed' : 'badge-closed'}">
+                ${allowed ? '✓ پاسخ فعال' : 'پاسخ غیرفعال'}
+              </span>
+            </div>
+            ${msg.senderName ? `<div class="sender-name">${escapeHtml(msg.senderName)}</div>` : ''}
+            <div class="message-text">${escapeHtml(msg.text)}</div>
+            <div class="message-actions">
+              <button class="btn btn-sm ${allowed ? 'btn-secondary' : 'btn-primary'}"
+                      onclick="toggleReply('${msg.id}')">
+                ${allowed ? 'غیرفعال کردن پاسخ' : 'اجازه پاسخ دادن'}
+              </button>
+            </div>
+            <div class="chat-box ${allowed ? 'open' : ''}" id="chat-${msg.id}">
+              <div class="chat-messages" id="chat-msgs-${msg.id}">
+                ${renderBubbles(msg)}
+              </div>
+              <div class="chat-input-row">
+                <input type="text" id="owner-input-${msg.id}" placeholder="جوابتو بنویس..." maxlength="250"
+                       onkeydown="if(event.key==='Enter') ownerReply('${msg.id}')">
+                <button class="btn btn-primary btn-sm" onclick="ownerReply('${msg.id}')">ارسال</button>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        return `
+          <div class="message-card ${allowed ? 'allowed' : ''}" data-id="${msg.id}">
+            <div class="message-meta">
+              <span class="badge badge-time">⏳ ${hoursLeft} ساعت مانده</span>
+              <span class="badge ${allowed ? 'badge-allowed' : 'badge-closed'}">
+                ${allowed ? '✓ می‌تونی جواب بدی' : 'منتظر اجازه صاحب اتاق'}
+              </span>
+            </div>
+            <div class="message-text">${escapeHtml(msg.text)}</div>
+            <div class="chat-box ${allowed ? 'open' : ''}">
+              <div class="chat-messages" id="sender-chat-${msg.id}">
+                ${renderBubbles(msg)}
+              </div>
+              ${allowed ? `
+                <div class="chat-input-row">
+                  <input type="text" id="sender-input-${msg.id}" placeholder="پیام جدید..." maxlength="250"
+                         onkeydown="if(event.key==='Enter') senderReply('${msg.id}')">
+                  <button class="btn btn-primary btn-sm" onclick="senderReply('${msg.id}')">ارسال</button>
+                </div>
+              ` : `<div class="chat-empty">صاحب اتاق هنوز اجازه پاسخ نداده.</div>`}
+            </div>
+          </div>`;
+      }
+    }
+
     function renderDashboard() {
       const rooms = getRooms();
       const room = rooms[currentRoom];
@@ -532,58 +643,4 @@
       room.messages = room.messages.filter(m => now - m.createdAt < 24 * 60 * 60 * 1000);
       saveRooms(rooms);
 
-      const container = document.getElementById('messages-container');
-
-      if (room.messages.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <span>🕊️</span>
-            هنوز پیامی نیومده<br>
-            <small style="opacity:0.7">لینک عمومیت رو با بقیه به اشتراک بذار</small>
-          </div>`;
-        return;
-      }
-
-      const sorted = [...room.messages].sort((a, b) => b.createdAt - a.createdAt);
-      container.innerHTML = sorted.map(msg => messageCardHTML(msg, now, true)).join('');
-
-      sorted.forEach(msg => {
-        const el = document.getElementById('chat-msgs-' + msg.id);
-        if (el) el.scrollTop = el.scrollHeight;
-      });
-    }
-
-    function softRefreshDashboard(room, now) {
-      const container = document.getElementById('messages-container');
-      const sorted = [...room.messages].sort((a, b) => b.createdAt - a.createdAt);
-
-      if (sorted.length === 0) {
-        if (!container.querySelector('.empty-state')) renderDashboard();
-        return;
-      }
-
-      // چک: آیا تعداد کارت‌ها فرق کرده؟
-      const existingIds = Array.from(container.querySelectorAll('.message-card')).map(el => el.dataset.id);
-      const newIds = sorted.map(m => m.id);
-
-      // اگه کارت جدید اضافه شده یا حذف شده → رندر کامل
-      if (existingIds.length !== newIds.length || !newIds.every(id => existingIds.includes(id))) {
-        renderDashboard();
-        return;
-      }
-
-      // وگرنه فقط bubble های جدید رو append کن
-      sorted.forEach(msg => {
-        const box = document.getElementById('chat-msgs-' + msg.id);
-        if (!box) return;
-        const currentBubbles = box.querySelectorAll('.chat-bubble').length;
-        const total = (msg.replies || []).length;
-        if (total > currentBubbles) {
-          // پاک کردن پیام خالی
-          const empty = box.querySelector('.chat-empty');
-          if (empty) empty.remove();
-          // اضافه کردن bubble های جدید
-          const newOnes = (msg.replies || []).slice(currentBubbles);
-          newOnes
-
-
+      const container
