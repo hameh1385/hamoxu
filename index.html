@@ -1,777 +1,121 @@
-<<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>hamo | چت ناشناس</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #06060a;
-      --bg-soft: #0c0c12;
-      --card: rgba(255, 255, 255, 0.04);
-      --card-hover: rgba(255, 255, 255, 0.07);
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #f2f2f7;
-      --text-muted: #8b8b9e;
-      --accent: #a78bfa;
-      --accent-2: #38bdf8;
-      --gradient: linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%);
-      --danger: #f87171;
-      --success: #4ade80;
-      --glow: 0 0 40px rgba(167, 139, 250, 0.25);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Vazirmatn', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .bg-glow {
-      position: fixed; top: -15%; left: 50%; transform: translateX(-50%);
-      width: 900px; height: 900px;
-      background: radial-gradient(circle, rgba(167, 139, 250, 0.12) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
-    }
-    .bg-glow-2 {
-      position: fixed; bottom: -20%; right: -15%;
-      width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
-    }
-
-    .page { display: none; position: relative; z-index: 1; min-height: 100vh; }
-    .page.active { display: block; }
-
-    .home {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 3rem 1.5rem; text-align: center; min-height: 100vh;
-    }
-
-    .brand {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(3.5rem, 12vw, 6rem);
-      font-weight: 900; letter-spacing: -2px;
-      background: var(--gradient);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; margin-bottom: 0.5rem; line-height: 1;
-    }
-
-    .tagline {
-      color: var(--text-muted); font-size: 1.15rem; margin-bottom: 3rem; max-width: 420px;
-    }
-
-    .home-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 24px;
-      padding: 2.5rem 2rem; width: 100%; max-width: 440px; backdrop-filter: blur(12px);
-    }
-
-    .home-card h2 { font-size: 1.4rem; margin-bottom: 0.6rem; }
-    .home-card > p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.8rem; }
-
-    .form-group { margin-bottom: 1.2rem; text-align: right; }
-    .form-group label {
-      display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem;
-    }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 0.9rem 1.1rem;
-      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-      border-radius: 12px; color: var(--text); font-family: inherit; font-size: 1rem;
-      outline: none; transition: border-color 0.2s;
-    }
-    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-    .form-group input::placeholder, .form-group textarea::placeholder { color: #555; }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      padding: 0.95rem 1.8rem; border: none; border-radius: 50px;
-      font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer;
-      transition: all 0.25s;
-    }
-    .btn-primary { background: var(--gradient); color: white; width: 100%; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--glow); }
-    .btn-secondary {
-      background: transparent; border: 1px solid var(--border); color: var(--text);
-    }
-    .btn-secondary:hover { background: var(--card); border-color: rgba(255,255,255,0.2); }
-    .btn-sm { padding: 0.5rem 1.1rem; font-size: 0.85rem; width: auto; }
-
-    .divider {
-      display: flex; align-items: center; gap: 1rem; margin: 1.8rem 0;
-      color: var(--text-muted); font-size: 0.85rem;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-
-    .result-box { display: none; margin-top: 1.5rem; text-align: right; }
-    .result-box.show { display: block; animation: fadeUp 0.4s ease; }
-
-    .link-box {
-      background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 12px;
-      padding: 0.9rem 1rem; margin-bottom: 0.8rem;
-      display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
-    }
-    .link-box code {
-      font-size: 0.85rem; color: var(--accent-2); word-break: break-all; flex: 1;
-    }
-    .copy-btn {
-      background: var(--card); border: 1px solid var(--border); color: var(--text);
-      padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.8rem;
-      cursor: pointer; white-space: nowrap; font-family: inherit;
-    }
-    .copy-btn:hover { background: var(--card-hover); }
-
-    .public-page {
-      max-width: 580px; margin: 0 auto; padding: 2rem 1.2rem 5rem;
-    }
-    .public-header { text-align: center; margin-bottom: 2rem; }
-    .public-header .brand-sm {
-      font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800;
-      background: var(--gradient); -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.3rem;
-    }
-    .room-title { font-size: 1.35rem; margin-bottom: 0.3rem; }
-    .room-desc { color: var(--text-muted); font-size: 0.95rem; }
-
-    .message-form {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem;
-    }
-    .message-form textarea {
-      width: 100%; min-height: 110px; padding: 1rem;
-      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-      border-radius: 14px; color: var(--text); font-family: inherit;
-      font-size: 1rem; resize: vertical; outline: none; margin-bottom: 0.6rem;
-    }
-    .message-form textarea:focus { border-color: var(--accent); }
-
-    .char-count {
-      text-align: left; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;
-    }
-    .char-count.warn { color: var(--danger); }
-
-    .messages-list { display: flex; flex-direction: column; gap: 1.2rem; }
-
-    .message-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 1.4rem; transition: border-color 0.25s;
-    }
-    .message-card.allowed { border-color: rgba(74, 222, 128, 0.4); }
-
-    .message-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 0.8rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem;
-    }
-
-    .message-text {
-      font-size: 1.02rem; line-height: 1.75; margin-bottom: 1rem; white-space: pre-wrap;
-    }
-
-    .sender-name {
-      font-size: 0.85rem; color: var(--accent); font-weight: 500; margin-bottom: 0.4rem;
-    }
-
-    .message-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
-
-    .badge {
-      display: inline-flex; align-items: center; gap: 0.3rem;
-      padding: 0.25rem 0.7rem; border-radius: 50px; font-size: 0.75rem; font-weight: 500;
-    }
-    .badge-time { background: rgba(255,255,255,0.06); color: var(--text-muted); }
-    .badge-allowed { background: rgba(74, 222, 128, 0.15); color: var(--success); }
-    .badge-closed { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
-
-    .chat-box {
-      margin-top: 1.1rem; border-top: 1px solid var(--border);
-      padding-top: 1.1rem; display: none;
-    }
-    .chat-box.open { display: block; animation: fadeUp 0.3s ease; }
-
-    .chat-messages {
-      max-height: 280px; overflow-y: auto;
-      display: flex; flex-direction: column; gap: 0.7rem;
-      margin-bottom: 1rem; padding: 0.4rem 0.2rem;
-      scroll-behavior: smooth;
-    }
-
-    .chat-bubble {
-      max-width: 82%; padding: 0.7rem 1.05rem; border-radius: 16px;
-      font-size: 0.93rem; line-height: 1.55; position: relative;
-    }
-    .chat-bubble .bubble-time {
-      font-size: 0.68rem; opacity: 0.55; margin-top: 0.25rem; display: block;
-    }
-
-    .chat-bubble.from-sender {
-      background: rgba(167, 139, 250, 0.14);
-      border: 1px solid rgba(167, 139, 250, 0.22);
-      align-self: flex-start; border-bottom-right-radius: 4px;
-    }
-    .chat-bubble.from-owner {
-      background: rgba(56, 189, 248, 0.13);
-      border: 1px solid rgba(56, 189, 248, 0.22);
-      align-self: flex-end; border-bottom-left-radius: 4px;
-    }
-
-    .chat-input-row {
-      display: flex; gap: 0.6rem; align-items: center;
-    }
-    .chat-input-row input {
-      flex: 1; padding: 0.8rem 1.1rem;
-      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
-      border-radius: 14px; color: var(--text); font-family: inherit;
-      font-size: 0.95rem; outline: none;
-    }
-    .chat-input-row input:focus { border-color: var(--accent); }
-
-    .chat-empty {
-      text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;
-    }
-
-    .dashboard {
-      max-width: 640px; margin: 0 auto; padding: 2rem 1.2rem 5rem;
-    }
-    .dash-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
-    }
-    .dash-header h1 { font-size: 1.5rem; }
-
-    .empty-state {
-      text-align: center; padding: 3.5rem 1rem; color: var(--text-muted);
-    }
-    .empty-state span { font-size: 2.8rem; display: block; margin-bottom: 0.9rem; opacity: 0.45; }
-
-    .login-box {
-      max-width: 400px; margin: 4rem auto;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 2rem;
-    }
-    .login-box h2 { text-align: center; margin-bottom: 1.5rem; }
-
-    .my-chats-section { margin-top: 2.5rem; }
-    .my-chats-section h3 {
-      font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-muted);
-    }
-
-    .site-footer {
-      text-align: center; padding: 2rem; color: var(--text-muted);
-      font-size: 0.85rem; position: relative; z-index: 1;
-    }
-    .site-footer .brand-mini {
-      font-family: 'Outfit', sans-serif; font-weight: 700;
-      background: var(--gradient); -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent; background-clip: text;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 480px) {
-      .home-card { padding: 1.8rem 1.3rem; }
-      .brand { font-size: 3.2rem; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HAMO — چت ناشناس</title>
+<style>
+:root{--bg:#0b0b12;--card:#151522;--card2:#1c1c2b;--text:#f7f7fb;--muted:#9a9aac;--accent:#9b7cff;--accent2:#6c5ce7;--danger:#ff5f6d}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at top,#1b1730 0,#0b0b12 45%);color:var(--text);font-family:Tahoma,Arial,sans-serif;min-height:100%}
+button,input,textarea{font:inherit}button{border:0;cursor:pointer}
+.app{max-width:720px;margin:auto;min-height:100dvh;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 20px}
+.logo{font-size:31px;font-weight:900;letter-spacing:3px;background:linear-gradient(90deg,#fff,#a98cff);-webkit-background-clip:text;color:transparent}
+.admin-dot{width:8px;height:8px;border-radius:50%;background:#2fe6a6;box-shadow:0 0 14px #2fe6a6}
+.hero,.card{background:rgba(21,21,34,.84);border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 50px rgba(0,0,0,.25);border-radius:24px}
+.hero{padding:26px;margin-top:8px}.hero h1{font-size:27px;margin:0 0 10px}.hero p{color:var(--muted);line-height:1.9;margin:0}
+.card{padding:18px;margin-top:14px}
+label{display:block;color:#c8c8d7;font-size:13px;margin:0 0 8px}
+input,textarea{width:100%;background:#0f0f19;color:var(--text);border:1px solid #2a2a3c;border-radius:15px;padding:13px;outline:none}
+input:focus,textarea:focus{border-color:var(--accent)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.btn{width:100%;padding:13px 16px;border-radius:15px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));font-weight:700;margin-top:10px}
+.btn.secondary{background:#252538}.btn.danger{background:#3a1d27;color:#ffabb3}
+.small{font-size:12px;color:var(--muted);line-height:1.8}
+.hidden{display:none!important}
+.tabs{display:flex;gap:8px;margin:14px 0}.tab{flex:1;padding:11px;border-radius:13px;background:#171725;color:#aaa}.tab.active{background:#292644;color:#fff}
+.chat{height:calc(100dvh - 155px);display:flex;flex-direction:column}
+.chat-head{display:flex;align-items:center;gap:10px;padding:12px 0}.back{background:#202032;color:#fff;padding:9px 12px;border-radius:12px}.status{font-size:12px;color:#63e5b4}
+.messages{flex:1;overflow:auto;padding:8px 2px 16px;overscroll-behavior:contain}
+.msg{max-width:82%;margin:8px 0;padding:11px 13px;border-radius:17px;position:relative;user-select:none;-webkit-user-select:none}
+.mine{margin-right:auto;background:#4b3f91;border-bottom-left-radius:5px}.theirs{margin-left:auto;background:#202031;border-bottom-right-radius:5px}
+.meta{font-size:10px;color:#aaa;margin-top:5px}.reactions{margin-top:7px;display:flex;gap:5px}.react{background:#11111c;border:1px solid #333349;border-radius:12px;padding:3px 7px;color:#ddd}
+.composer{padding:8px 0 calc(8px + env(safe-area-inset-bottom));display:flex;gap:8px;background:linear-gradient(transparent,var(--bg) 20%)}
+.composer textarea{resize:none;min-height:48px;max-height:120px}.send{width:52px;align-self:flex-end;height:48px;border-radius:15px;background:var(--accent);color:white}
+.typing{height:18px;color:#8d8da0;font-size:11px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#252538;color:#fff;padding:10px 14px;border-radius:13px;display:none;z-index:20}
+</style>
 </head>
 <body>
-  <div class="bg-glow"></div>
-  <div class="bg-glow-2"></div>
-
-  <div id="page-home" class="page active">
-    <div class="home">
-      <div class="brand">hamo</div>
-      <p class="tagline">پیام ناشناس بفرست. جواب بگیر. بدون اینکه کسی بفهمه کی هستی.</p>
-
-      <div class="home-card">
-        <h2>لینک ناشناس بساز</h2>
-        <p>یه نام کاربری انتخاب کن تا لینک شخصیت ساخته بشه.</p>
-
-        <div class="form-group">
-          <label>نام کاربری (برای لینک)</label>
-          <input type="text" id="create-username" placeholder="مثلاً hamo یا ali_82" maxlength="20">
-        </div>
-
-        <div class="form-group">
-          <label>رمز ورود به پنل</label>
-          <input type="password" id="create-password" placeholder="حداقل ۴ کاراکتر" maxlength="30">
-        </div>
-
-        <div class="form-group">
-          <label>نام نمایشی (اختیاری)</label>
-          <input type="text" id="create-displayname" placeholder="مثلاً همو" maxlength="25">
-        </div>
-
-        <button class="btn btn-primary" onclick="createRoom()">ساخت لینک ناشناس</button>
-
-        <div class="result-box" id="create-result">
-          <p style="margin-bottom: 0.8rem; color: var(--success); font-size: 0.95rem;">✓ لینکت ساخته شد!</p>
-          
-          <div style="margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--text-muted);">لینک عمومی تو:</div>
-          <div class="link-box">
-            <code id="public-link"></code>
-            <button class="copy-btn" onclick="copyText('public-link')">کپی</button>
-          </div>
-
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem;">
-            نام کاربری و رمزت رو یادت باشه. برای ورود به پنل لازم داری.
-          </p>
-
-          <button class="btn btn-secondary" style="width:100%; margin-top:1rem;" onclick="goToDashboard()">ورود به پنل مدیریت</button>
-        </div>
-
-        <div class="divider">یا</div>
-        <button class="btn btn-secondary" style="width:100%;" onclick="showLogin()">ورود به پنل موجود</button>
-      </div>
-    </div>
-    <div class="site-footer">ساخته شده توسط <span class="brand-mini">hamo</span></div>
-  </div>
-
-  <div id="page-login" class="page">
-    <div class="login-box">
-      <h2>ورود به پنل</h2>
-      <div class="form-group">
-        <label>نام کاربری</label>
-        <input type="text" id="login-username" placeholder="نام کاربری اتاقت">
-      </div>
-      <div class="form-group">
-        <label>رمز عبور</label>
-        <input type="password" id="login-password" placeholder="رمز اتاقت">
-      </div>
-      <button class="btn btn-primary" onclick="login()">ورود</button>
-      <button class="btn btn-secondary" style="width:100%; margin-top:0.8rem;" onclick="showPage('home')">بازگشت</button>
-    </div>
-  </div>
-
-  <div id="page-dashboard" class="page">
-    <div class="dashboard">
-      <div class="dash-header">
-        <div>
-          <h1 id="dash-title">پنل مدیریت</h1>
-          <p style="color:var(--text-muted); font-size:0.9rem;" id="dash-subtitle">پیام‌های دریافتی</p>
-        </div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-          <button class="btn btn-secondary btn-sm" onclick="copyPublicLink()">کپی لینک</button>
-          <button class="btn btn-secondary btn-sm" onclick="logout()">خروج</button>
-        </div>
-      </div>
-      <div id="messages-container"></div>
-    </div>
-  </div>
-
-  <div id="page-public" class="page">
-    <div class="public-page">
-      <div class="public-header">
-        <div class="brand-sm">hamo</div>
-        <h2 class="room-title" id="public-room-name">اتاق ناشناس</h2>
-        <p class="room-desc">پیامت ناشناس می‌مونه. اگه صاحب اتاق بخواد، می‌تونه بهت جواب بده.</p>
-      </div>
-
-      <div class="message-form" id="send-form">
-        <div class="form-group" style="margin-bottom:0.9rem;">
-          <label>اسم موقت تو (اختیاری)</label>
-          <input type="text" id="sender-name" placeholder="مثلاً دوست ناشناس" maxlength="20">
-        </div>
-        <textarea id="anon-message" placeholder="پیام ناشناست رو بنویس..." maxlength="400" oninput="updateCharCount()"></textarea>
-        <div class="char-count" id="char-count">۰ / ۵۰ کلمه</div>
-        <button class="btn btn-primary" onclick="sendAnonymousMessage()">ارسال پیام ناشناس</button>
-      </div>
-
-      <div id="send-success" style="display:none; text-align:center; padding:1.4rem; background:var(--card); border-radius:16px; border:1px solid var(--border); margin-bottom:2rem;">
-        <p style="color:var(--success); margin-bottom:0.5rem; font-size:1.05rem;">✓ پیامت ارسال شد</p>
-        <p style="color:var(--text-muted); font-size:0.9rem;">
-          اگه صاحب اتاق اجازه بده، چت همین‌جا برات باز می‌شه. نیازی به کد نیست.
-        </p>
-      </div>
-
-      <div class="my-chats-section" id="my-chats-section" style="display:none;">
-        <h3>چت‌های قبلی تو با این اتاق</h3>
-        <div id="my-chats-list" class="messages-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let currentRoom = null;
-    let isOwner = false;
-
-    function getRooms() {
-      return JSON.parse(localStorage.getItem('hamo_rooms_v2') || '{}');
-    }
-    function saveRooms(rooms) {
-      localStorage.setItem('hamo_rooms_v2', JSON.stringify(rooms));
-    }
-
-    function getMySent() {
-      return JSON.parse(localStorage.getItem('hamo_my_sent') || '{}');
-    }
-    function saveMySent(data) {
-      localStorage.setItem('hamo_my_sent', JSON.stringify(data));
-    }
-
-    function generateId() {
-      return Math.random().toString(36).slice(2, 10);
-    }
-
-    function showPage(name) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-' + name).classList.add('active');
-      window.scrollTo(0, 0);
-    }
-    function showLogin() { showPage('login'); }
-
-    function createRoom() {
-      const username = document.getElementById('create-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-      const password = document.getElementById('create-password').value.trim();
-      const displayName = document.getElementById('create-displayname').value.trim() || username;
-
-      if (!username || username.length < 3) {
-        alert('نام کاربری باید حداقل ۳ حرف باشه (فقط حروف انگلیسی، عدد و _)');
-        return;
-      }
-      if (!password || password.length < 4) {
-        alert('رمز باید حداقل ۴ کاراکتر باشه');
-        return;
-      }
-
-      const rooms = getRooms();
-      if (rooms[username]) {
-        alert('این نام کاربری قبلاً گرفته شده. یکی دیگه انتخاب کن.');
-        return;
-      }
-
-      rooms[username] = {
-        password,
-        displayName,
-        messages: [],
-        createdAt: Date.now()
-      };
-      saveRooms(rooms);
-      currentRoom = username;
-      isOwner = true;
-
-      const base = window.location.origin + window.location.pathname;
-      document.getElementById('public-link').textContent = base + '?u=' + username;
-      document.getElementById('create-result').classList.add('show');
-    }
-
-    function login() {
-      const username = document.getElementById('login-username').value.trim().toLowerCase();
-      const password = document.getElementById('login-password').value;
-
-      const rooms = getRooms();
-      if (!rooms[username]) {
-        alert('این نام کاربری پیدا نشد');
-        return;
-      }
-      if (rooms[username].password !== password) {
-        alert('رمز اشتباهه');
-        return;
-      }
-
-      currentRoom = username;
-      isOwner = true;
-      renderDashboard();
-      showPage('dashboard');
-    }
-
-    function goToDashboard() {
-      if (!currentRoom) return;
-      isOwner = true;
-      renderDashboard();
-      showPage('dashboard');
-    }
-
-    function logout() {
-      currentRoom = null;
-      isOwner = false;
-      showPage('home');
-    }
-
-    function renderDashboard() {
-      const rooms = getRooms();
-      const room = rooms[currentRoom];
-      if (!room) return;
-
-      document.getElementById('dash-title').textContent = room.displayName || currentRoom;
-      document.getElementById('dash-subtitle').textContent = '@' + currentRoom;
-
-      const now = Date.now();
-      room.messages = room.messages.filter(m => now - m.createdAt < 24 * 60 * 60 * 1000);
-      saveRooms(rooms);
-
-      const container = document.getElementById('messages-container');
-
-      if (room.messages.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <span>🕊️</span>
-            هنوز پیامی نیومده<br>
-            <small style="opacity:0.7">لینک عمومیت رو با بقیه به اشتراک بذار</small>
-          </div>`;
-        return;
-      }
-
-      const sorted = [...room.messages].sort((a, b) => b.createdAt - a.createdAt);
-
-      container.innerHTML = sorted.map(msg => {
-        const hoursLeft = Math.max(0, 24 - Math.floor((now - msg.createdAt) / 3600000));
-        const allowed = msg.allowReply;
-
-        return `
-          <div class="message-card ${allowed ? 'allowed' : ''}">
-            <div class="message-meta">
-              <span class="badge badge-time">⏳ ${hoursLeft} ساعت مانده</span>
-              <span class="badge ${allowed ? 'badge-allowed' : 'badge-closed'}">
-                ${allowed ? '✓ پاسخ فعال' : 'پاسخ غیرفعال'}
-              </span>
-            </div>
-            ${msg.senderName ? `<div class="sender-name">${escapeHtml(msg.senderName)}</div>` : ''}
-            <div class="message-text">${escapeHtml(msg.text)}</div>
-            <div class="message-actions">
-              <button class="btn btn-sm ${allowed ? 'btn-secondary' : 'btn-primary'}"
-                      onclick="toggleReply('${msg.id}')">
-                ${allowed ? 'غیرفعال کردن پاسخ' : 'اجازه پاسخ دادن'}
-              </button>
-            </div>
-
-            <div class="chat-box ${allowed ? 'open' : ''}" id="chat-${msg.id}">
-              <div class="chat-messages" id="chat-msgs-${msg.id}">
-                ${renderBubbles(msg)}
-              </div>
-              <div class="chat-input-row">
-                <input type="text" id="owner-input-${msg.id}" placeholder="جوابتو بنویس..." maxlength="250"
-                       onkeydown="if(event.key==='Enter') ownerReply('${msg.id}')">
-                <button class="btn btn-primary btn-sm" onclick="ownerReply('${msg.id}')">ارسال</button>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-
-      sorted.forEach(msg => {
-        const el = document.getElementById('chat-msgs-' + msg.id);
-        if (el) el.scrollTop = el.scrollHeight;
-      });
-    }
-
-    function renderBubbles(msg) {
-      if (!msg.replies || msg.replies.length === 0) {
-        return `<div class="chat-empty">هنوز جوابی رد و بدل نشده. اولین پیام رو بفرست.</div>`;
-      }
-      return msg.replies.map(r => {
-        const time = new Date(r.at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
-        return `
-          <div class="chat-bubble ${r.from === 'owner' ? 'from-owner' : 'from-sender'}">
-            ${escapeHtml(r.text)}
-            <span class="bubble-time">${time}</span>
-          </div>`;
-      }).join('');
-    }
-
-    function toggleReply(msgId) {
-      const rooms = getRooms();
-      const room = rooms[currentRoom];
-      const msg = room.messages.find(m => m.id === msgId);
-      if (!msg) return;
-      msg.allowReply = !msg.allowReply;
-      saveRooms(rooms);
-      renderDashboard();
-    }
-
-    function ownerReply(msgId) {
-      const input = document.getElementById('owner-input-' + msgId);
-      const text = input.value.trim();
-      if (!text) return;
-
-      const rooms = getRooms();
-      const room = rooms[currentRoom];
-      const msg = room.messages.find(m => m.id === msgId);
-      if (!msg || !msg.allowReply) return;
-
-      if (!msg.replies) msg.replies = [];
-      msg.replies.push({ from: 'owner', text, at: Date.now() });
-      saveRooms(rooms);
-      input.value = '';
-      renderDashboard();
-    }
-
-    function copyPublicLink() {
-      const base = window.location.origin + window.location.pathname;
-      const link = base + '?u=' + currentRoom;
-      navigator.clipboard.writeText(link).then(() => alert('لینک کپی شد!'));
-    }
-
-    function loadPublicPage(username) {
-      const rooms = getRooms();
-      if (!rooms[username]) {
-        alert('این اتاق وجود نداره');
-        showPage('home');
-        return;
-      }
-
-      currentRoom = username;
-      isOwner = false;
-      document.getElementById('public-room-name').textContent = rooms[username].displayName || username;
-      document.getElementById('send-success').style.display = 'none';
-      document.getElementById('send-form').style.display = 'block';
-      document.getElementById('anon-message').value = '';
-      document.getElementById('sender-name').value = '';
-      updateCharCount();
-
-      renderMyChats();
-      showPage('public');
-    }
-
-    function updateCharCount() {
-      const text = document.getElementById('anon-message').value.trim();
-      const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
-      const el = document.getElementById('char-count');
-      el.textContent = words + ' / ۵۰ کلمه';
-      el.classList.toggle('warn', words > 50);
-    }
-
-    function sendAnonymousMessage() {
-      const text = document.getElementById('anon-message').value.trim();
-      const senderName = document.getElementById('sender-name').value.trim();
-
-      if (!text) { alert('پیام نمی‌تونه خالی باشه'); return; }
-
-      const words = text.split(/\s+/).filter(Boolean).length;
-      if (words > 50) { alert('پیام نباید بیشتر از ۵۰ کلمه باشه'); return; }
-
-      const rooms = getRooms();
-      const room = rooms[currentRoom];
-      if (!room) return;
-
-      const msgId = generateId();
-
-      room.messages.push({
-        id: msgId,
-        text,
-        senderName: senderName || null,
-        createdAt: Date.now(),
-        allowReply: false,
-        replies: []
-      });
-      saveRooms(rooms);
-
-      const mySent = getMySent();
-      if (!mySent[currentRoom]) mySent[currentRoom] = [];
-      mySent[currentRoom].push(msgId);
-      saveMySent(mySent);
-
-      document.getElementById('send-success').style.display = 'block';
-      document.getElementById('anon-message').value = '';
-      document.getElementById('sender-name').value = '';
-      updateCharCount();
-
-      renderMyChats();
-    }
-
-    function renderMyChats() {
-      const rooms = getRooms();
-      const room = rooms[currentRoom];
-      if (!room) return;
-
-      const mySent = getMySent();
-      const myIds = mySent[currentRoom] || [];
-
-      const now = Date.now();
-      room.messages = room.messages.filter(m => now - m.createdAt < 24 * 60 * 60 * 1000);
-      saveRooms(rooms);
-
-      const myMessages = room.messages.filter(m => myIds.includes(m.id));
-
-      const section = document.getElementById('my-chats-section');
-      const list = document.getElementById('my-chats-list');
-
-      if (myMessages.length === 0) {
-        section.style.display = 'none';
-        return;
-      }
-
-      section.style.display = 'block';
-
-      list.innerHTML = myMessages.map(msg => {
-        const hoursLeft = Math.max(0, 24 - Math.floor((now - msg.createdAt) / 3600000));
-        const allowed = msg.allowReply;
-
-        return `
-          <div class="message-card ${allowed ? 'allowed' : ''}">
-            <div class="message-meta">
-              <span class="badge badge-time">⏳ ${hoursLeft} ساعت مانده</span>
-              <span class="badge ${allowed ? 'badge-allowed' : 'badge-closed'}">
-                ${allowed ? '✓ می‌تونی جواب بدی' : 'منتظر اجازه صاحب اتاق'}
-              </span>
-            </div>
-            <div class="message-text">${escapeHtml(msg.text)}</div>
-
-            <div class="chat-box ${allowed ? 'open' : ''}">
-              <div class="chat-messages" id="sender-chat-${msg.id}">
-                ${renderBubbles(msg)}
-              </div>
-              ${allowed ? `
-                <div class="chat-input-row">
-                  <input type="text" id="sender-input-${msg.id}" placeholder="پیام جدید..." maxlength="250"
-                         onkeydown="if(event.key==='Enter') senderReply('${msg.id}')">
-                  <button class="btn btn-primary btn-sm" onclick="senderReply('${msg.id}')">ارسال</button>
-                </div>
-              ` : `<div class="chat-empty">صاحب اتاق هنوز اجازه پاسخ نداده.</div>`}
-            </div>
-          </div>`;
-      }).join('');
-
-      myMessages.forEach(msg => {
-        const el = document.getElementById('sender-chat-' + msg.id);
-        if (el) el.scrollTop = el.scrollHeight;
-      });
-    }
-
-    function senderReply(msgId) {
-      const input = document.getElementById('sender-input-' + msgId);
-      const text = input.value.trim();
-      if (!text) return;
-
-      const rooms = getRooms();
-      const room = rooms[currentRoom];
-      const msg = room.messages.find(m => m.id === msgId);
-      if (!msg || !msg.allowReply) return;
-
-      if (!msg.replies) msg.replies = [];
-      msg.replies.push({ from: 'sender', text, at: Date.now() });
-      saveRooms(rooms);
-      input.value = '';
-      renderMyChats();
-    }
-
-    function copyText(id) {
-      const text = document.getElementById(id).textContent;
-      navigator.clipboard.writeText(text).then(() => alert('کپی شد!'));
-    }
-
-    function escapeHtml(text) {
-      const d = document.createElement('div');
-      d.textContent = text;
-      return d.innerHTML;
-    }
-
-    (function init() {
-      const params = new URLSearchParams(window.location.search);
-      const u = params.get('u');
-      if (u) loadPublicPage(u.toLowerCase());
-    })();
-  </script>
+<div class="app" id="home">
+<header><div class="logo">HAMO</div><div class="admin-dot" title="پنل مدیریت مخفی"></div></header>
+<section class="hero">
+<h1>پیام ناشناس، بدون لو رفتن هویت</h1>
+<p>یک لینک مخصوص خودت بساز؛ هر نفر یک گفت‌وگوی جدا دارد و فقط وقتی اجازه بدهی می‌تواند پاسخ بدهد.</p>
+</section>
+
+<div class="card">
+<label>نام کاربری دلخواه</label>
+<input id="username" placeholder="مثلاً hamo">
+<label style="margin-top:12px">رمز اتاق</label>
+<input id="roomPass" type="password" placeholder="رمز دلخواه خودت">
+<div class="row">
+<button class="btn" id="create">ساخت اتاق</button>
+<button class="btn secondary" id="join">ورود به لینک</button>
+</div>
+<p class="small">در نسخه Firebase، لینک هر صاحب اتاق با نام کاربری او ساخته می‌شود و پیام‌ها برای هر مهمان جدا نگهداری می‌شوند.</p>
+</div>
+
+<div class="card">
+<b>نمونه لینک تو</b>
+<input id="linkPreview" readonly value="https://example.com/u/hamo">
+<button class="btn secondary" id="copyLink">کپی لینک</button>
+</div>
+
+<div class="small" style="text-align:center;margin:16px">پیام‌ها در طراحی نهایی می‌توانند پس از ۲۴ ساعت خودکار حذف شوند.</div>
+</div>
+
+<div class="app hidden" id="chatPage">
+<div class="chat">
+<div class="chat-head">
+<button class="back" id="back">بازگشت</button>
+<div><b id="chatTitle">چت ناشناس</b><div class="status" id="online">● آنلاین</div></div>
+</div>
+<div class="messages" id="messages"></div>
+<div class="typing" id="typing"></div>
+<div class="composer">
+<textarea id="input" maxlength="1000" placeholder="پیام ناشناس خودت را بنویس..."></textarea>
+<button class="send" id="send">➤</button>
+</div>
+</div>
+</div>
+
+<div class="app hidden" id="admin">
+<div class="card">
+<h2>پنل مدیریت</h2>
+<p class="small">این فقط پوستهٔ اولیه است. احراز هویت واقعی باید سمت Firebase انجام شود.</p>
+<button class="btn danger" id="closeAdmin">خروج</button>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const toast=m=>{const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',1800)}
+function openChat(){
+  $('home').classList.add('hidden'); $('chatPage').classList.remove('hidden');
+  $('chatTitle').textContent='چت ناشناس با '+($('username').value.trim()||'HAMO');
+  if(!$('messages').children.length) addMsg('سلام 👋 این یک چت جداگانه برای همین مهمان است.','theirs');
+  history.pushState({chat:true},'',location.href.split('#')[0]+'#chat');
+}
+function addMsg(text,side){
+  const d=document.createElement('div'); d.className='msg '+side;
+  d.innerHTML='<div>'+escapeHtml(text)+'</div><div class="meta">پیام ناشناس • '+new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})+'</div><div class="reactions"><button class="react">❤️</button><button class="react">😂</button><button class="react">👍</button></div>';
+  d.querySelectorAll('.react').forEach(b=>b.onclick=()=>toast('ری‌اکشن ثبت شد'));
+  $('messages').appendChild(d); $('messages').scrollTop=$('messages').scrollHeight;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('create').onclick=()=>{const u=$('username').value.trim()||'hamo';$('linkPreview').value=location.origin+location.pathname+'#u/'+encodeURIComponent(u);toast('اتاق آماده شد')}
+$('copyLink').onclick=async()=>{try{await navigator.clipboard.writeText($('linkPreview').value);toast('لینک کپی شد')}catch(e){toast('کپی در این مرورگر در دسترس نیست')}}
+$('join').onclick=openChat;
+$('back').onclick=()=>{history.pushState({},'',location.pathname);$('chatPage').classList.add('hidden');$('home').classList.remove('hidden')};
+$('send').onclick=()=>{const x=$('input').value.trim();if(!x)return;addMsg(x,'mine');$('input').value='';$('typing').textContent='';}
+$('input').addEventListener('input',()=>{$('typing').textContent=$('input').value?'در حال نوشتن…':''});
+$('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
+window.addEventListener('popstate',()=>{if(location.hash==='#chat')openChat();else{$('chatPage').classList.add('hidden');$('home').classList.remove('hidden')}});
+document.addEventListener('copy',e=>{e.preventDefault();toast('کپی پیام‌ها غیرفعال است')});
+document.addEventListener('contextmenu',e=>{if(e.target.closest('.msg'))e.preventDefault()});
+</script>
 </body>
 </html>
 
