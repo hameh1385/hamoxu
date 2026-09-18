@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -13,7 +13,7 @@
       --bg-soft: #0c0c12;
       --card: rgba(255, 255, 255, 0.04);
       --card-hover: rgba(255, 255, 255, 0.07);
-      --border: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.09);
       --text: #f2f2f7;
       --text-muted: #8b8b9e;
       --accent: #a78bfa;
@@ -24,15 +24,8 @@
       --glow: 0 0 40px rgba(167, 139, 250, 0.25);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Vazirmatn', system-ui, sans-serif;
@@ -43,549 +36,252 @@
       overflow-x: hidden;
     }
 
-    /* Background */
     .bg-glow {
-      position: fixed;
-      top: -15%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 900px;
-      height: 900px;
+      position: fixed; top: -15%; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 900px;
       background: radial-gradient(circle, rgba(167, 139, 250, 0.12) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
-
     .bg-glow-2 {
-      position: fixed;
-      bottom: -20%;
-      right: -15%;
-      width: 700px;
-      height: 700px;
+      position: fixed; bottom: -20%; right: -15%;
+      width: 700px; height: 700px;
       background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
 
-    /* ===== Pages ===== */
-    .page {
-      display: none;
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-    }
+    .page { display: none; position: relative; z-index: 1; min-height: 100vh; }
+    .page.active { display: block; }
 
-    .page.active {
-      display: block;
-    }
-
-    /* ===== Home Page ===== */
     .home {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 1.5rem;
-      text-align: center;
-      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 3rem 1.5rem; text-align: center; min-height: 100vh;
     }
 
     .brand {
       font-family: 'Outfit', sans-serif;
       font-size: clamp(3.5rem, 12vw, 6rem);
-      font-weight: 900;
-      letter-spacing: -2px;
+      font-weight: 900; letter-spacing: -2px;
       background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      line-height: 1;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 0.5rem; line-height: 1;
     }
 
     .tagline {
-      color: var(--text-muted);
-      font-size: 1.15rem;
-      margin-bottom: 3rem;
-      max-width: 420px;
+      color: var(--text-muted); font-size: 1.15rem; margin-bottom: 3rem; max-width: 420px;
     }
 
     .home-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 2.5rem 2rem;
-      width: 100%;
-      max-width: 440px;
-      backdrop-filter: blur(12px);
+      background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+      padding: 2.5rem 2rem; width: 100%; max-width: 440px; backdrop-filter: blur(12px);
     }
 
-    .home-card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 0.6rem;
-    }
+    .home-card h2 { font-size: 1.4rem; margin-bottom: 0.6rem; }
+    .home-card > p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.8rem; }
 
-    .home-card p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.8rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.2rem;
-      text-align: right;
-    }
-
+    .form-group { margin-bottom: 1.2rem; text-align: right; }
     .form-group label {
-      display: block;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
+      display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem;
     }
-
-    .form-group input {
-      width: 100%;
-      padding: 0.9rem 1.1rem;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 0.9rem 1.1rem;
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      border-radius: 12px; color: var(--text); font-family: inherit; font-size: 1rem;
+      outline: none; transition: border-color 0.2s;
     }
-
-    .form-group input:focus {
-      border-color: var(--accent);
-    }
-
-    .form-group input::placeholder {
-      color: #555;
-    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: #555; }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.95rem 1.8rem;
-      border: none;
-      border-radius: 50px;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.95rem 1.8rem; border: none; border-radius: 50px;
+      font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer;
       transition: all 0.25s;
     }
-
-    .btn-primary {
-      background: var(--gradient);
-      color: white;
-      width: 100%;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--glow);
-    }
-
+    .btn-primary { background: var(--gradient); color: white; width: 100%; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--glow); }
     .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
+      background: transparent; border: 1px solid var(--border); color: var(--text);
     }
-
-    .btn-secondary:hover {
-      background: var(--card);
-      border-color: rgba(255,255,255,0.2);
-    }
-
-    .btn-sm {
-      padding: 0.5rem 1.1rem;
-      font-size: 0.85rem;
-    }
+    .btn-secondary:hover { background: var(--card); border-color: rgba(255,255,255,0.2); }
+    .btn-sm { padding: 0.5rem 1.1rem; font-size: 0.85rem; width: auto; }
 
     .divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 1.8rem 0;
-      color: var(--text-muted);
-      font-size: 0.85rem;
+      display: flex; align-items: center; gap: 1rem; margin: 1.8rem 0;
+      color: var(--text-muted); font-size: 0.85rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
     }
 
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ===== Result after create ===== */
-    .result-box {
-      display: none;
-      margin-top: 1.5rem;
-      text-align: right;
-    }
-
-    .result-box.show {
-      display: block;
-      animation: fadeUp 0.4s ease;
-    }
+    .result-box { display: none; margin-top: 1.5rem; text-align: right; }
+    .result-box.show { display: block; animation: fadeUp 0.4s ease; }
 
     .link-box {
-      background: rgba(0,0,0,0.35);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.9rem 1rem;
-      margin-bottom: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.8rem;
+      background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 12px;
+      padding: 0.9rem 1rem; margin-bottom: 0.8rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
     }
-
     .link-box code {
-      font-size: 0.85rem;
-      color: var(--accent-2);
-      word-break: break-all;
-      flex: 1;
+      font-size: 0.85rem; color: var(--accent-2); word-break: break-all; flex: 1;
     }
-
     .copy-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      white-space: nowrap;
-      font-family: inherit;
+      background: var(--card); border: 1px solid var(--border); color: var(--text);
+      padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.8rem;
+      cursor: pointer; white-space: nowrap; font-family: inherit;
     }
+    .copy-btn:hover { background: var(--card-hover); }
 
-    .copy-btn:hover {
-      background: var(--card-hover);
-    }
-
-    /* ===== Public Message Page ===== */
     .public-page {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 2rem 1.2rem 4rem;
+      max-width: 580px; margin: 0 auto; padding: 2rem 1.2rem 5rem;
     }
-
-    .public-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
+    .public-header { text-align: center; margin-bottom: 2rem; }
     .public-header .brand-sm {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.3rem;
+      font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800;
+      background: var(--gradient); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.3rem;
     }
-
-    .room-title {
-      font-size: 1.3rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .room-desc {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
+    .room-title { font-size: 1.35rem; margin-bottom: 0.3rem; }
+    .room-desc { color: var(--text-muted); font-size: 0.95rem; }
 
     .message-form {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem;
     }
-
     .message-form textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 1rem;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 1rem;
-      resize: vertical;
-      outline: none;
-      margin-bottom: 0.8rem;
-      transition: border-color 0.2s;
+      width: 100%; min-height: 110px; padding: 1rem;
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      border-radius: 14px; color: var(--text); font-family: inherit;
+      font-size: 1rem; resize: vertical; outline: none; margin-bottom: 0.6rem;
     }
-
-    .message-form textarea:focus {
-      border-color: var(--accent);
-    }
+    .message-form textarea:focus { border-color: var(--accent); }
 
     .char-count {
-      text-align: left;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
+      text-align: left; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;
     }
+    .char-count.warn { color: var(--danger); }
 
-    .char-count.warn {
-      color: var(--danger);
-    }
-
-    /* Messages list (for owner & chat) */
-    .messages-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .messages-list { display: flex; flex-direction: column; gap: 1.2rem; }
 
     .message-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.3rem;
-      transition: border-color 0.2s;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.4rem; transition: border-color 0.25s;
     }
-
-    .message-card.allowed {
-      border-color: rgba(74, 222, 128, 0.35);
-    }
+    .message-card.allowed { border-color: rgba(74, 222, 128, 0.4); }
 
     .message-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.7rem;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.8rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem;
     }
 
     .message-text {
-      font-size: 1rem;
-      line-height: 1.7;
-      margin-bottom: 1rem;
-      white-space: pre-wrap;
+      font-size: 1.02rem; line-height: 1.75; margin-bottom: 1rem; white-space: pre-wrap;
     }
 
-    .message-actions {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
+    .sender-name {
+      font-size: 0.85rem; color: var(--accent); font-weight: 500; margin-bottom: 0.4rem;
     }
+
+    .message-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: 50px;
-      font-size: 0.75rem;
-      font-weight: 500;
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.25rem 0.7rem; border-radius: 50px; font-size: 0.75rem; font-weight: 500;
     }
+    .badge-time { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .badge-allowed { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+    .badge-closed { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
 
-    .badge-time {
-      background: rgba(255,255,255,0.06);
-      color: var(--text-muted);
-    }
-
-    .badge-allowed {
-      background: rgba(74, 222, 128, 0.15);
-      color: var(--success);
-    }
-
-    .badge-closed {
-      background: rgba(248, 113, 113, 0.12);
-      color: var(--danger);
-    }
-
-    /* Chat box inside message */
     .chat-box {
-      margin-top: 1rem;
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-      display: none;
+      margin-top: 1.1rem; border-top: 1px solid var(--border);
+      padding-top: 1.1rem; display: none;
     }
-
-    .chat-box.open {
-      display: block;
-      animation: fadeUp 0.3s ease;
-    }
+    .chat-box.open { display: block; animation: fadeUp 0.3s ease; }
 
     .chat-messages {
-      max-height: 220px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      margin-bottom: 0.9rem;
-      padding: 0.5rem 0;
+      max-height: 280px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 0.7rem;
+      margin-bottom: 1rem; padding: 0.4rem 0.2rem;
+      scroll-behavior: smooth;
     }
 
     .chat-bubble {
-      max-width: 85%;
-      padding: 0.65rem 1rem;
-      border-radius: 14px;
-      font-size: 0.92rem;
-      line-height: 1.5;
+      max-width: 82%; padding: 0.7rem 1.05rem; border-radius: 16px;
+      font-size: 0.93rem; line-height: 1.55; position: relative;
+    }
+    .chat-bubble .bubble-time {
+      font-size: 0.68rem; opacity: 0.55; margin-top: 0.25rem; display: block;
     }
 
     .chat-bubble.from-sender {
-      background: rgba(167, 139, 250, 0.15);
-      border: 1px solid rgba(167, 139, 250, 0.25);
-      align-self: flex-start;
-      border-bottom-right-radius: 4px;
+      background: rgba(167, 139, 250, 0.14);
+      border: 1px solid rgba(167, 139, 250, 0.22);
+      align-self: flex-start; border-bottom-right-radius: 4px;
     }
-
     .chat-bubble.from-owner {
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      align-self: flex-end;
-      border-bottom-left-radius: 4px;
+      background: rgba(56, 189, 248, 0.13);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      align-self: flex-end; border-bottom-left-radius: 4px;
     }
 
     .chat-input-row {
-      display: flex;
-      gap: 0.6rem;
+      display: flex; gap: 0.6rem; align-items: center;
     }
-
     .chat-input-row input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
+      flex: 1; padding: 0.8rem 1.1rem;
+      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
+      border-radius: 14px; color: var(--text); font-family: inherit;
+      font-size: 0.95rem; outline: none;
+    }
+    .chat-input-row input:focus { border-color: var(--accent); }
+
+    .chat-empty {
+      text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;
     }
 
-    .chat-input-row input:focus {
-      border-color: var(--accent);
-    }
-
-    /* ===== Dashboard ===== */
     .dashboard {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 2rem 1.2rem 4rem;
+      max-width: 640px; margin: 0 auto; padding: 2rem 1.2rem 5rem;
     }
-
     .dash-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
     }
-
-    .dash-header h1 {
-      font-size: 1.5rem;
-    }
+    .dash-header h1 { font-size: 1.5rem; }
 
     .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-muted);
+      text-align: center; padding: 3.5rem 1rem; color: var(--text-muted);
     }
+    .empty-state span { font-size: 2.8rem; display: block; margin-bottom: 0.9rem; opacity: 0.45; }
 
-    .empty-state span {
-      font-size: 2.5rem;
-      display: block;
-      margin-bottom: 0.8rem;
-      opacity: 0.5;
-    }
-
-    /* Login */
     .login-box {
-      max-width: 400px;
-      margin: 4rem auto;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
+      max-width: 400px; margin: 4rem auto;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+    }
+    .login-box h2 { text-align: center; margin-bottom: 1.5rem; }
+
+    .my-chats-section { margin-top: 2.5rem; }
+    .my-chats-section h3 {
+      font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-muted);
     }
 
-    .login-box h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    /* Toggle switch */
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 50px;
-      cursor: pointer;
-      transition: background 0.25s;
-    }
-
-    .toggle.active {
-      background: var(--success);
-    }
-
-    .toggle::after {
-      content: '';
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 18px;
-      height: 18px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.25s;
-    }
-
-    .toggle.active::after {
-      transform: translateX(-20px);
-    }
-
-    /* Footer */
     .site-footer {
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      position: relative;
-      z-index: 1;
+      text-align: center; padding: 2rem; color: var(--text-muted);
+      font-size: 0.85rem; position: relative; z-index: 1;
     }
-
     .site-footer .brand-mini {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family: 'Outfit', sans-serif; font-weight: 700;
+      background: var(--gradient); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text;
     }
 
-    /* Animations */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(14px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsive */
     @media (max-width: 480px) {
-      .home-card {
-        padding: 1.8rem 1.3rem;
-      }
-      .brand {
-        font-size: 3.2rem;
-      }
+      .home-card { padding: 1.8rem 1.3rem; }
+      .brand { font-size: 3.2rem; }
     }
   </style>
 </head>
@@ -593,7 +289,6 @@
   <div class="bg-glow"></div>
   <div class="bg-glow-2"></div>
 
-  <!-- ==================== HOME PAGE ==================== -->
   <div id="page-home" class="page active">
     <div class="home">
       <div class="brand">hamo</div>
@@ -601,16 +296,21 @@
 
       <div class="home-card">
         <h2>لینک ناشناس بساز</h2>
-        <p>یه لینک شخصی می‌گیری که بقیه بتونن برات پیام ناشناس بفرستن.</p>
+        <p>یه نام کاربری انتخاب کن تا لینک شخصیت ساخته بشه.</p>
 
         <div class="form-group">
-          <label>رمز ورود به پنل (خودت انتخاب کن)</label>
-          <input type="password" id="create-password" placeholder="مثلاً یک رمز قوی" maxlength="30">
+          <label>نام کاربری (برای لینک)</label>
+          <input type="text" id="create-username" placeholder="مثلاً hamo یا ali_82" maxlength="20">
+        </div>
+
+        <div class="form-group">
+          <label>رمز ورود به پنل</label>
+          <input type="password" id="create-password" placeholder="حداقل ۴ کاراکتر" maxlength="30">
         </div>
 
         <div class="form-group">
           <label>نام نمایشی (اختیاری)</label>
-          <input type="text" id="create-name" placeholder="مثلاً همو" maxlength="20">
+          <input type="text" id="create-displayname" placeholder="مثلاً همو" maxlength="25">
         </div>
 
         <button class="btn btn-primary" onclick="createRoom()">ساخت لینک ناشناس</button>
@@ -618,43 +318,32 @@
         <div class="result-box" id="create-result">
           <p style="margin-bottom: 0.8rem; color: var(--success); font-size: 0.95rem;">✓ لینکت ساخته شد!</p>
           
-          <div style="margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--text-muted);">لینک عمومی (برای دیگران):</div>
+          <div style="margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--text-muted);">لینک عمومی تو:</div>
           <div class="link-box">
             <code id="public-link"></code>
             <button class="copy-btn" onclick="copyText('public-link')">کپی</button>
           </div>
 
-          <div style="margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--text-muted);">کد اتاقت:</div>
-          <div class="link-box">
-            <code id="room-code"></code>
-            <button class="copy-btn" onclick="copyText('room-code')">کپی</button>
-          </div>
-
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
-            این رمز و کد اتاق رو یادداشت کن. برای ورود به پنل لازم داری.
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem;">
+            نام کاربری و رمزت رو یادت باشه. برای ورود به پنل لازم داری.
           </p>
 
           <button class="btn btn-secondary" style="width:100%; margin-top:1rem;" onclick="goToDashboard()">ورود به پنل مدیریت</button>
         </div>
 
         <div class="divider">یا</div>
-
         <button class="btn btn-secondary" style="width:100%;" onclick="showLogin()">ورود به پنل موجود</button>
       </div>
     </div>
-
-    <div class="site-footer">
-      ساخته شده توسط <span class="brand-mini">hamo</span>
-    </div>
+    <div class="site-footer">ساخته شده توسط <span class="brand-mini">hamo</span></div>
   </div>
 
-  <!-- ==================== LOGIN PAGE ==================== -->
   <div id="page-login" class="page">
     <div class="login-box">
       <h2>ورود به پنل</h2>
       <div class="form-group">
-        <label>کد اتاق</label>
-        <input type="text" id="login-code" placeholder="کد اتاقت رو وارد کن">
+        <label>نام کاربری</label>
+        <input type="text" id="login-username" placeholder="نام کاربری اتاقت">
       </div>
       <div class="form-group">
         <label>رمز عبور</label>
@@ -665,161 +354,164 @@
     </div>
   </div>
 
-  <!-- ==================== DASHBOARD ==================== -->
   <div id="page-dashboard" class="page">
     <div class="dashboard">
       <div class="dash-header">
         <div>
           <h1 id="dash-title">پنل مدیریت</h1>
-          <p style="color:var(--text-muted); font-size:0.9rem;">پیام‌های دریافتی تو</p>
+          <p style="color:var(--text-muted); font-size:0.9rem;" id="dash-subtitle">پیام‌های دریافتی</p>
         </div>
-        <div style="display:flex; gap:0.6rem;">
-          <button class="btn btn-secondary btn-sm" onclick="copyPublicLink()">کپی لینک عمومی</button>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="copyPublicLink()">کپی لینک</button>
           <button class="btn btn-secondary btn-sm" onclick="logout()">خروج</button>
         </div>
       </div>
-
-      <div id="messages-container">
-        <!-- Messages will be injected here -->
-      </div>
+      <div id="messages-container"></div>
     </div>
   </div>
 
-  <!-- ==================== PUBLIC SEND PAGE ==================== -->
   <div id="page-public" class="page">
     <div class="public-page">
       <div class="public-header">
         <div class="brand-sm">hamo</div>
         <h2 class="room-title" id="public-room-name">اتاق ناشناس</h2>
-        <p class="room-desc">پیامت ناشناس می‌مونه. صاحب اتاق می‌تونه بهت اجازه جواب بده.</p>
+        <p class="room-desc">پیامت ناشناس می‌مونه. اگه صاحب اتاق بخواد، می‌تونه بهت جواب بده.</p>
       </div>
 
-      <div class="message-form">
-        <textarea id="anon-message" placeholder="پیام ناشناست رو بنویس..." maxlength="300" oninput="updateCharCount()"></textarea>
+      <div class="message-form" id="send-form">
+        <div class="form-group" style="margin-bottom:0.9rem;">
+          <label>اسم موقت تو (اختیاری)</label>
+          <input type="text" id="sender-name" placeholder="مثلاً دوست ناشناس" maxlength="20">
+        </div>
+        <textarea id="anon-message" placeholder="پیام ناشناست رو بنویس..." maxlength="400" oninput="updateCharCount()"></textarea>
         <div class="char-count" id="char-count">۰ / ۵۰ کلمه</div>
         <button class="btn btn-primary" onclick="sendAnonymousMessage()">ارسال پیام ناشناس</button>
       </div>
 
-      <div id="send-success" style="display:none; text-align:center; padding:1.5rem; background:var(--card); border-radius:16px; border:1px solid var(--border);">
-        <p style="color:var(--success); margin-bottom:0.8rem;">✓ پیامت ارسال شد</p>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
-          اگه صاحب اتاق اجازه بده، می‌تونی با این کد برگردی و ادامه بدی:
+      <div id="send-success" style="display:none; text-align:center; padding:1.4rem; background:var(--card); border-radius:16px; border:1px solid var(--border); margin-bottom:2rem;">
+        <p style="color:var(--success); margin-bottom:0.5rem; font-size:1.05rem;">✓ پیامت ارسال شد</p>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+          اگه صاحب اتاق اجازه بده، چت همین‌جا برات باز می‌شه. نیازی به کد نیست.
         </p>
-        <div class="link-box">
-          <code id="reply-token"></code>
-          <button class="copy-btn" onclick="copyText('reply-token')">کپی</button>
-        </div>
+      </div>
+
+      <div class="my-chats-section" id="my-chats-section" style="display:none;">
+        <h3>چت‌های قبلی تو با این اتاق</h3>
+        <div id="my-chats-list" class="messages-list"></div>
       </div>
     </div>
   </div>
 
   <script>
-    // ===================== Mock Data (localStorage) =====================
     let currentRoom = null;
-
-    function generateCode(length = 6) {
-      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      let code = '';
-      for (let i = 0; i < length; i++) {
-        code += chars[Math.floor(Math.random() * chars.length)];
-      }
-      return code;
-    }
+    let isOwner = false;
 
     function getRooms() {
-      return JSON.parse(localStorage.getItem('hamo_rooms') || '{}');
+      return JSON.parse(localStorage.getItem('hamo_rooms_v2') || '{}');
     }
-
     function saveRooms(rooms) {
-      localStorage.setItem('hamo_rooms', JSON.stringify(rooms));
+      localStorage.setItem('hamo_rooms_v2', JSON.stringify(rooms));
     }
 
-    // ===================== Navigation =====================
+    function getMySent() {
+      return JSON.parse(localStorage.getItem('hamo_my_sent') || '{}');
+    }
+    function saveMySent(data) {
+      localStorage.setItem('hamo_my_sent', JSON.stringify(data));
+    }
+
+    function generateId() {
+      return Math.random().toString(36).slice(2, 10);
+    }
+
     function showPage(name) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + name).classList.add('active');
       window.scrollTo(0, 0);
     }
+    function showLogin() { showPage('login'); }
 
-    function showLogin() {
-      showPage('login');
-    }
-
-    // ===================== Create Room =====================
     function createRoom() {
+      const username = document.getElementById('create-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
       const password = document.getElementById('create-password').value.trim();
-      const name = document.getElementById('create-name').value.trim() || 'اتاق ناشناس';
+      const displayName = document.getElementById('create-displayname').value.trim() || username;
 
+      if (!username || username.length < 3) {
+        alert('نام کاربری باید حداقل ۳ حرف باشه (فقط حروف انگلیسی، عدد و _)');
+        return;
+      }
       if (!password || password.length < 4) {
         alert('رمز باید حداقل ۴ کاراکتر باشه');
         return;
       }
 
-      const code = generateCode(7);
       const rooms = getRooms();
+      if (rooms[username]) {
+        alert('این نام کاربری قبلاً گرفته شده. یکی دیگه انتخاب کن.');
+        return;
+      }
 
-      rooms[code] = {
-        password: password,
-        name: name,
+      rooms[username] = {
+        password,
+        displayName,
         messages: [],
         createdAt: Date.now()
       };
-
       saveRooms(rooms);
-      currentRoom = code;
+      currentRoom = username;
+      isOwner = true;
 
-      // Show result
       const base = window.location.origin + window.location.pathname;
-      document.getElementById('public-link').textContent = base + '?room=' + code;
-      document.getElementById('room-code').textContent = code;
+      document.getElementById('public-link').textContent = base + '?u=' + username;
       document.getElementById('create-result').classList.add('show');
     }
 
-    // ===================== Login =====================
     function login() {
-      const code = document.getElementById('login-code').value.trim().toLowerCase();
+      const username = document.getElementById('login-username').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
 
       const rooms = getRooms();
-      if (!rooms[code]) {
-        alert('کد اتاق پیدا نشد');
+      if (!rooms[username]) {
+        alert('این نام کاربری پیدا نشد');
         return;
       }
-      if (rooms[code].password !== password) {
+      if (rooms[username].password !== password) {
         alert('رمز اشتباهه');
         return;
       }
 
-      currentRoom = code;
+      currentRoom = username;
+      isOwner = true;
       renderDashboard();
       showPage('dashboard');
     }
 
     function goToDashboard() {
       if (!currentRoom) return;
+      isOwner = true;
       renderDashboard();
       showPage('dashboard');
     }
 
     function logout() {
       currentRoom = null;
+      isOwner = false;
       showPage('home');
     }
 
-    // ===================== Dashboard =====================
     function renderDashboard() {
       const rooms = getRooms();
       const room = rooms[currentRoom];
       if (!room) return;
 
-      document.getElementById('dash-title').textContent = room.name;
+      document.getElementById('dash-title').textContent = room.displayName || currentRoom;
+      document.getElementById('dash-subtitle').textContent = '@' + currentRoom;
 
-      const container = document.getElementById('messages-container');
-
-      // Clean expired messages (24h)
       const now = Date.now();
       room.messages = room.messages.filter(m => now - m.createdAt < 24 * 60 * 60 * 1000);
       saveRooms(rooms);
+
+      const container = document.getElementById('messages-container');
 
       if (room.messages.length === 0) {
         container.innerHTML = `
@@ -831,52 +523,60 @@
         return;
       }
 
-      // Sort newest first
       const sorted = [...room.messages].sort((a, b) => b.createdAt - a.createdAt);
 
-      container.innerHTML = sorted.map((msg, idx) => {
-        const hoursLeft = Math.max(0, 24 - Math.floor((now - msg.createdAt) / (60 * 60 * 1000)));
+      container.innerHTML = sorted.map(msg => {
+        const hoursLeft = Math.max(0, 24 - Math.floor((now - msg.createdAt) / 3600000));
         const allowed = msg.allowReply;
 
         return `
-          <div class="message-card ${allowed ? 'allowed' : ''}" id="msg-${msg.id}">
+          <div class="message-card ${allowed ? 'allowed' : ''}">
             <div class="message-meta">
               <span class="badge badge-time">⏳ ${hoursLeft} ساعت مانده</span>
               <span class="badge ${allowed ? 'badge-allowed' : 'badge-closed'}">
                 ${allowed ? '✓ پاسخ فعال' : 'پاسخ غیرفعال'}
               </span>
             </div>
+            ${msg.senderName ? `<div class="sender-name">${escapeHtml(msg.senderName)}</div>` : ''}
             <div class="message-text">${escapeHtml(msg.text)}</div>
             <div class="message-actions">
-              <button class="btn btn-sm ${allowed ? 'btn-secondary' : 'btn-primary'}" 
+              <button class="btn btn-sm ${allowed ? 'btn-secondary' : 'btn-primary'}"
                       onclick="toggleReply('${msg.id}')">
                 ${allowed ? 'غیرفعال کردن پاسخ' : 'اجازه پاسخ دادن'}
               </button>
             </div>
 
             <div class="chat-box ${allowed ? 'open' : ''}" id="chat-${msg.id}">
-              <div class="chat-messages" id="chat-messages-${msg.id}">
-                ${renderChatBubbles(msg)}
+              <div class="chat-messages" id="chat-msgs-${msg.id}">
+                ${renderBubbles(msg)}
               </div>
               <div class="chat-input-row">
-                <input type="text" id="owner-reply-${msg.id}" placeholder="جوابتو بنویس..." maxlength="200">
+                <input type="text" id="owner-input-${msg.id}" placeholder="جوابتو بنویس..." maxlength="250"
+                       onkeydown="if(event.key==='Enter') ownerReply('${msg.id}')">
                 <button class="btn btn-primary btn-sm" onclick="ownerReply('${msg.id}')">ارسال</button>
               </div>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
+
+      sorted.forEach(msg => {
+        const el = document.getElementById('chat-msgs-' + msg.id);
+        if (el) el.scrollTop = el.scrollHeight;
+      });
     }
 
-    function renderChatBubbles(msg) {
+    function renderBubbles(msg) {
       if (!msg.replies || msg.replies.length === 0) {
-        return `<div style="color:var(--text-muted); font-size:0.85rem; text-align:center;">هنوز جوابی رد و بدل نشده</div>`;
+        return `<div class="chat-empty">هنوز جوابی رد و بدل نشده. اولین پیام رو بفرست.</div>`;
       }
-      return msg.replies.map(r => `
-        <div class="chat-bubble ${r.from === 'owner' ? 'from-owner' : 'from-sender'}">
-          ${escapeHtml(r.text)}
-        </div>
-      `).join('');
+      return msg.replies.map(r => {
+        const time = new Date(r.at).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+        return `
+          <div class="chat-bubble ${r.from === 'owner' ? 'from-owner' : 'from-sender'}">
+            ${escapeHtml(r.text)}
+            <span class="bubble-time">${time}</span>
+          </div>`;
+      }).join('');
     }
 
     function toggleReply(msgId) {
@@ -884,14 +584,13 @@
       const room = rooms[currentRoom];
       const msg = room.messages.find(m => m.id === msgId);
       if (!msg) return;
-
       msg.allowReply = !msg.allowReply;
       saveRooms(rooms);
       renderDashboard();
     }
 
     function ownerReply(msgId) {
-      const input = document.getElementById('owner-reply-' + msgId);
+      const input = document.getElementById('owner-input-' + msgId);
       const text = input.value.trim();
       if (!text) return;
 
@@ -901,12 +600,7 @@
       if (!msg || !msg.allowReply) return;
 
       if (!msg.replies) msg.replies = [];
-      msg.replies.push({
-        from: 'owner',
-        text: text,
-        at: Date.now()
-      });
-
+      msg.replies.push({ from: 'owner', text, at: Date.now() });
       saveRooms(rooms);
       input.value = '';
       renderDashboard();
@@ -914,32 +608,34 @@
 
     function copyPublicLink() {
       const base = window.location.origin + window.location.pathname;
-      const link = base + '?room=' + currentRoom;
-      navigator.clipboard.writeText(link).then(() => {
-        alert('لینک کپی شد!');
-      });
+      const link = base + '?u=' + currentRoom;
+      navigator.clipboard.writeText(link).then(() => alert('لینک کپی شد!'));
     }
 
-    // ===================== Public Page =====================
-    function loadPublicPage(code) {
+    function loadPublicPage(username) {
       const rooms = getRooms();
-      if (!rooms[code]) {
+      if (!rooms[username]) {
         alert('این اتاق وجود نداره');
         showPage('home');
         return;
       }
 
-      currentRoom = code;
-      document.getElementById('public-room-name').textContent = rooms[code].name;
+      currentRoom = username;
+      isOwner = false;
+      document.getElementById('public-room-name').textContent = rooms[username].displayName || username;
       document.getElementById('send-success').style.display = 'none';
+      document.getElementById('send-form').style.display = 'block';
       document.getElementById('anon-message').value = '';
+      document.getElementById('sender-name').value = '';
       updateCharCount();
+
+      renderMyChats();
       showPage('public');
     }
 
     function updateCharCount() {
       const text = document.getElementById('anon-message').value.trim();
-      const words = text ? text.split(/\s+/).length : 0;
+      const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
       const el = document.getElementById('char-count');
       el.textContent = words + ' / ۵۰ کلمه';
       el.classList.toggle('warn', words > 50);
@@ -947,62 +643,133 @@
 
     function sendAnonymousMessage() {
       const text = document.getElementById('anon-message').value.trim();
-      if (!text) {
-        alert('پیام نمی‌تونه خالی باشه');
-        return;
-      }
+      const senderName = document.getElementById('sender-name').value.trim();
 
-      const words = text.split(/\s+/).length;
-      if (words > 50) {
-        alert('پیام نباید بیشتر از ۵۰ کلمه باشه');
-        return;
-      }
+      if (!text) { alert('پیام نمی‌تونه خالی باشه'); return; }
+
+      const words = text.split(/\s+/).filter(Boolean).length;
+      if (words > 50) { alert('پیام نباید بیشتر از ۵۰ کلمه باشه'); return; }
 
       const rooms = getRooms();
       const room = rooms[currentRoom];
       if (!room) return;
 
-      const msgId = generateCode(8);
-      const replyToken = generateCode(10);
+      const msgId = generateId();
 
       room.messages.push({
         id: msgId,
-        text: text,
+        text,
+        senderName: senderName || null,
         createdAt: Date.now(),
         allowReply: false,
-        replyToken: replyToken,
         replies: []
       });
-
       saveRooms(rooms);
 
-      document.getElementById('reply-token').textContent = replyToken;
+      const mySent = getMySent();
+      if (!mySent[currentRoom]) mySent[currentRoom] = [];
+      mySent[currentRoom].push(msgId);
+      saveMySent(mySent);
+
       document.getElementById('send-success').style.display = 'block';
       document.getElementById('anon-message').value = '';
+      document.getElementById('sender-name').value = '';
       updateCharCount();
+
+      renderMyChats();
     }
 
-    // ===================== Helpers =====================
-    function copyText(elementId) {
-      const text = document.getElementById(elementId).textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert('کپی شد!');
+    function renderMyChats() {
+      const rooms = getRooms();
+      const room = rooms[currentRoom];
+      if (!room) return;
+
+      const mySent = getMySent();
+      const myIds = mySent[currentRoom] || [];
+
+      const now = Date.now();
+      room.messages = room.messages.filter(m => now - m.createdAt < 24 * 60 * 60 * 1000);
+      saveRooms(rooms);
+
+      const myMessages = room.messages.filter(m => myIds.includes(m.id));
+
+      const section = document.getElementById('my-chats-section');
+      const list = document.getElementById('my-chats-list');
+
+      if (myMessages.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+
+      list.innerHTML = myMessages.map(msg => {
+        const hoursLeft = Math.max(0, 24 - Math.floor((now - msg.createdAt) / 3600000));
+        const allowed = msg.allowReply;
+
+        return `
+          <div class="message-card ${allowed ? 'allowed' : ''}">
+            <div class="message-meta">
+              <span class="badge badge-time">⏳ ${hoursLeft} ساعت مانده</span>
+              <span class="badge ${allowed ? 'badge-allowed' : 'badge-closed'}">
+                ${allowed ? '✓ می‌تونی جواب بدی' : 'منتظر اجازه صاحب اتاق'}
+              </span>
+            </div>
+            <div class="message-text">${escapeHtml(msg.text)}</div>
+
+            <div class="chat-box ${allowed ? 'open' : ''}">
+              <div class="chat-messages" id="sender-chat-${msg.id}">
+                ${renderBubbles(msg)}
+              </div>
+              ${allowed ? `
+                <div class="chat-input-row">
+                  <input type="text" id="sender-input-${msg.id}" placeholder="پیام جدید..." maxlength="250"
+                         onkeydown="if(event.key==='Enter') senderReply('${msg.id}')">
+                  <button class="btn btn-primary btn-sm" onclick="senderReply('${msg.id}')">ارسال</button>
+                </div>
+              ` : `<div class="chat-empty">صاحب اتاق هنوز اجازه پاسخ نداده.</div>`}
+            </div>
+          </div>`;
+      }).join('');
+
+      myMessages.forEach(msg => {
+        const el = document.getElementById('sender-chat-' + msg.id);
+        if (el) el.scrollTop = el.scrollHeight;
       });
+    }
+
+    function senderReply(msgId) {
+      const input = document.getElementById('sender-input-' + msgId);
+      const text = input.value.trim();
+      if (!text) return;
+
+      const rooms = getRooms();
+      const room = rooms[currentRoom];
+      const msg = room.messages.find(m => m.id === msgId);
+      if (!msg || !msg.allowReply) return;
+
+      if (!msg.replies) msg.replies = [];
+      msg.replies.push({ from: 'sender', text, at: Date.now() });
+      saveRooms(rooms);
+      input.value = '';
+      renderMyChats();
+    }
+
+    function copyText(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => alert('کپی شد!'));
     }
 
     function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+      const d = document.createElement('div');
+      d.textContent = text;
+      return d.innerHTML;
     }
 
-    // ===================== Init =====================
     (function init() {
       const params = new URLSearchParams(window.location.search);
-      const roomCode = params.get('room');
-      if (roomCode) {
-        loadPublicPage(roomCode.toLowerCase());
-      }
+      const u = params.get('u');
+      if (u) loadPublicPage(u.toLowerCase());
     })();
   </script>
 </body>
