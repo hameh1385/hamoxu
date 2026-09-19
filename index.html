@@ -318,7 +318,10 @@
         </div>
         <div class="form-group">
           <label>رمز ورود به پنل</label>
-          <input type="password" id="create-password" placeholder="حداقل ۶ کاراکتر قوی" maxlength="40" autocomplete="new-password">
+          <input type="password" id="create-password" placeholder="هر رمزی که دوست داری" maxlength="40" autocomplete="new-password">
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.4rem; line-height:1.5;">
+            اگه کروم گفت رمزت ناامنه، یه رمز دیگه انتخاب کن.
+          </p>
         </div>
         <div class="form-group">
           <label>نام نمایشی (اختیاری)</label>
@@ -482,8 +485,8 @@
         alert('نام کاربری حداقل ۳ حرف (انگلیسی، عدد، _)');
         return;
       }
-      if (!password || password.length < 6) {
-        alert('رمز باید حداقل ۶ کاراکتر باشه');
+      if (!password || password.length < 1) {
+        alert('رمز نمی‌تونه خالی باشه');
         return;
       }
 
@@ -1053,5 +1056,6 @@
   </script>
 </body>
 </html>
+
 
 
