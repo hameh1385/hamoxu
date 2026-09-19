@@ -233,8 +233,44 @@
     }
     .login-box h2 { text-align:center; margin-bottom:1.4rem; }
 
-    .my-chats-section { margin-top:2.2rem; }
-    .my-chats-section h3 { font-size:1.05rem; margin-bottom:0.9rem; color:var(--text-muted); }
+    .my-chats-section { margin-top:1.5rem; }
+    .my-chats-section.expanded {
+      margin-top: 0.5rem;
+      max-width: 100%;
+    }
+    .make-own-link {
+      display: inline-block;
+      margin-top: 0.9rem;
+      font-size: 0.88rem;
+      color: var(--accent-2);
+      text-decoration: none;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+    .make-own-link:hover { opacity: 1; text-decoration: underline; }
+
+    /* When chat is active → more immersive layout */
+    .public-page.chat-mode {
+      padding: 1.2rem 0.7rem 3rem;
+      max-width: 100%;
+    }
+    .public-page.chat-mode .public-header {
+      margin-bottom: 1rem;
+    }
+    .public-page.chat-mode .message-form,
+    .public-page.chat-mode #send-success {
+      display: none !important;
+    }
+    .public-page.chat-mode .my-chats-section {
+      margin-top: 0.3rem;
+    }
+    .public-page.chat-mode .message-card {
+      border-radius: 18px;
+      padding: 1.1rem;
+    }
+    .public-page.chat-mode .chat-messages {
+      max-height: 55vh;
+    }
 
     .site-footer {
       text-align:center; padding:2rem; color:var(--text-muted);
@@ -299,9 +335,8 @@
             <button class="copy-btn" onclick="copyText('public-link')">کپی</button>
           </div>
           <p style="font-size:0.84rem;color:var(--text-muted);margin-top:0.7rem;">
-            نام کاربری و رمزت رو در جای امن نگه دار.
+            نام کاربری و رمزت رو در جای امن نگه دار. بعداً از بخش پایین وارد پنل شو.
           </p>
-          <button class="btn btn-secondary" style="width:100%;margin-top:1rem;" onclick="goToDashboard()">ورود به پنل</button>
         </div>
 
         <div class="divider">یا</div>
@@ -352,6 +387,7 @@
         <div class="brand-sm">hamo</div>
         <h2 class="room-title" id="public-room-name">اتاق ناشناس</h2>
         <p class="room-desc">پیامت ناشناس می‌مونه. اگه صاحب اتاق بخواد می‌تونه جواب بده.</p>
+        <a href="#" onclick="goToHome();return false;" class="make-own-link">خودت هم لینک ناشناس بساز ←</a>
       </div>
 
       <div class="message-form" id="send-form">
@@ -370,7 +406,6 @@
       </div>
 
       <div class="my-chats-section" id="my-chats-section" style="display:none;">
-        <h3>چت‌های تو با این اتاق</h3>
         <div id="my-chats-list" class="messages-list"></div>
       </div>
     </div>
@@ -425,7 +460,17 @@
       }
     }
 
-    function showLogin() { showPage('login'); }
+    function showLogin() {
+      // Prefill last username if exists
+      try {
+        const last = localStorage.getItem('hamo_last_user');
+        if (last) {
+          const input = document.getElementById('login-username');
+          if (input && !input.value) input.value = last;
+        }
+      } catch(e) {}
+      showPage('login');
+    }
 
     // ===== Create =====
     function createRoom() {
@@ -478,6 +523,13 @@
         alert('رمز اشتباه است');
         return;
       }
+
+      // Remember for next time (suggestion)
+      try {
+        localStorage.setItem('hamo_last_user', username);
+        // We don't store the real password in plain text for security.
+        // Browser autocomplete will handle password suggestion if the user allows it.
+      } catch(e) {}
 
       currentRoom = username;
       isOwner = true;
@@ -748,6 +800,8 @@
       document.getElementById('send-form').style.display = 'block';
       document.getElementById('anon-message').value = '';
       document.getElementById('sender-name').value = '';
+      const publicPage = document.querySelector('.public-page');
+      if (publicPage) publicPage.classList.remove('chat-mode');
       updateCharCount();
       renderMyChats(false);
       showPage('public');
@@ -796,6 +850,13 @@
       renderMyChats(false);
     }
 
+    function goToHome() {
+      history.replaceState(null, '', window.location.pathname);
+      currentRoom = null;
+      isOwner = false;
+      showPage('home');
+    }
+
     function renderMyChats(silent = false) {
       const rooms = getRooms();
       const room = rooms[currentRoom];
@@ -810,9 +871,21 @@
       const myMessages = room.messages.filter(m => myIds.includes(m.id));
       const section = document.getElementById('my-chats-section');
       const list = document.getElementById('my-chats-list');
+      const publicPage = document.querySelector('.public-page');
+      const successBox = document.getElementById('send-success');
+
+      // If any of my messages is allowed → hide success box + expand chat
+      const hasActiveChat = myMessages.some(m => m.allowReply);
+      if (hasActiveChat) {
+        if (successBox) successBox.style.display = 'none';
+        if (publicPage) publicPage.classList.add('chat-mode');
+      } else {
+        if (publicPage) publicPage.classList.remove('chat-mode');
+      }
 
       if (myMessages.length === 0) {
         section.style.display = 'none';
+        if (publicPage) publicPage.classList.remove('chat-mode');
         return;
       }
       section.style.display = 'block';
@@ -980,4 +1053,5 @@
   </script>
 </body>
 </html>
+
 
